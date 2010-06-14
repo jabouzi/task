@@ -1,0 +1,25 @@
+<html><head>
+<title> Tasks reminder </title>
+<link type="text/css" href="css/css.css" rel="stylesheet" />
+<script type="text/javascript" src="js/jquery-latest.js"></script>
+<script type="text/javascript" src="js/jquery.tablesorter.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $("#tab").tablesorter(); 
+  });
+</script>
+
+</head>
+<body>
+<table id="tab" class="tablesorter">
+<thead>
+<tr>
+	<th style="cursor:pointer;" scope="col">ID</th>
+	<th style="cursor:pointer;" scope="col">Title</th>
+	<th style="cursor:pointer;" scope="col">Start</th>
+	<th style="cursor:pointer;" scope="col">End</th>
+	<th style="cursor:pointer;" scope="col">Task</th>
+	<th style="cursor:pointer;" scope="col">Date</th>
+</tr>
+</thead>
+<tbody>	
