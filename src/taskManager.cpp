@@ -207,7 +207,6 @@ void TaskManager::showTasks()
     if (file.open(QIODevice::WriteOnly|QIODevice::Text)) {
         file.write(data0.toUtf8()); 
         while (query.next()) {
-            file.write("<tr>\n"); 
             file.write("<tr>\n");  
             file.write("<td>");   
             file.write(query.value(0).toString().toUtf8());
