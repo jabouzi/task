@@ -1,9 +1,9 @@
 #include "taskManager.h"
 //
 TaskManager::TaskManager( QWidget * parent, Qt::WFlags f) 
-	: QMainWindow(parent, f)
+    : QMainWindow(parent, f)
 {
-	setupUi(this);    
+    setupUi(this);    
     if (!tableExists("tasksTable"))
     {
         createTable("tasksTable");
@@ -194,17 +194,17 @@ void TaskManager::about()
 
 void TaskManager::showTasks()
 {
-    QFile file0("data/.header");	
-	file0.open(QIODevice::ReadOnly|QIODevice::Text);
-	QString data0 = QString::fromUtf8(file0.readAll());	
-    QFile file1("data/.footer");	
-	file1.open(QIODevice::ReadOnly|QIODevice::Text);
-	QString data1 = QString::fromUtf8(file1.readAll());		
+    QFile file0("data/.header");    
+    file0.open(QIODevice::ReadOnly|QIODevice::Text);
+    QString data0 = QString::fromUtf8(file0.readAll());    
+    QFile file1("data/.footer");    
+    file1.open(QIODevice::ReadOnly|QIODevice::Text);
+    QString data1 = QString::fromUtf8(file1.readAll());        
     prefs.db.open();    
     QSqlQuery query;
     query.exec("SELECT * FROM tasksTable");
-    QFile file("data/tasks.html");	
-	if (file.open(QIODevice::WriteOnly|QIODevice::Text)) {
+    QFile file("data/tasks.html");    
+    if (file.open(QIODevice::WriteOnly|QIODevice::Text)) {
         file.write(data0.toUtf8()); 
         while (query.next()) {
              file.write("<tr>\n");  
@@ -227,10 +227,10 @@ void TaskManager::showTasks()
              file.write(query.value(5).toString().toUtf8());
              file.write("</td>\n");       
              file.write("</tr>\n");  
-        }  	
-        file.write(data1.toUtf8());	
- 	}
+        }      
+        file.write(data1.toUtf8());    
+     }
     QDir dir;
-    QDesktopServices::openUrl(QUrl("file:///"+dir.currentPath()+"/data/tasks.html"));	
+    QDesktopServices::openUrl(QUrl("file:///"+dir.currentPath()+"/data/tasks.html"));    
 }
 //
