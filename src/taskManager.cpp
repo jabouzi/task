@@ -4,14 +4,9 @@ TaskManager::TaskManager( QWidget * parent, Qt::WFlags f)
     : QMainWindow(parent, f)
 {
     setupUi(this);    
-    if (!tableExists("tasksTable"))
-    {
-        createTable("tasksTable");
-    }
-    if (!tableExists("prefTable"))
-    {
-        createTable("prefTable");
-    }
+    path = QCoreApplication::applicationDirPath ();
+    if (path.data()[path.size() - 1] != '/') path += "/";
+    init();
     adjustWindow();
     createActions();
     createTryIcon();
@@ -61,6 +56,19 @@ TaskManager::TaskManager( QWidget * parent, Qt::WFlags f)
     connect(actionShow_tasks, SIGNAL(triggered()), this, SLOT(showTasks()));
 }
 
+void TaskManager::init()
+{
+    initDB();
+    prefs.initPath(path);
+}
+
+void TaskManager::initDB()
+{
+    db = Database::getInstance();
+    db->setDatabaseName(path+"data/.task.db");
+    db->setDatabase();   
+}
+
 void TaskManager::adjustWindow(){
     QDesktopWidget *desktop = QApplication::desktop();
     int screenWidth, width; 
@@ -86,7 +94,7 @@ void TaskManager::createTryIcon()
     trayIconMenu->addAction(restoreAction);
     trayIconMenu->addAction(quitAction);
     trayIcon = new QSystemTrayIcon(this);
-    trayIcon->setIcon(QIcon("images/task.png")); 
+    trayIcon->setIcon(QIcon(path+"images/task.png")); 
     trayIcon->show();
     trayIcon->setContextMenu(trayIconMenu);
 }
@@ -106,14 +114,9 @@ void TaskManager::createActions()
 void TaskManager::setProjectsList()
 {
     taskList->clear();
-    QStringList titlesList;
-    prefs.db.open();    
-    QSqlQuery query;
-    query.exec("SELECT DISTINCT title FROM tasksTable");
-    int field = query.record().indexOf("title");
-    while (query.next()) {
-        titlesList << query.value(field).toString();
-    }
+    QStringList titlesList;    
+    db->setTable("tasksTable");
+    titlesList = db->selectAllDistinct("title");
     titlesList.sort();          
     int currentIndex = titlesList.indexOf(lastTitle);
     taskList->addItems(titlesList);
@@ -132,22 +135,17 @@ void TaskManager::save()
 {
     lastTitle = taskList->currentText();
     QDate today = QDate::currentDate();
-    prefs.db.open();    
-    QSqlQuery query;
-    QString q = "INSERT INTO tasksTable (title, start, end, detail, taskDate) VALUES ('"+lastTitle+"','"+taskStart->time().toString("HH:mm")+"','"+taskEnd->time().toString("HH:mm")+"','"+taskText->toPlainText()+"','"+today.toString("dd/MM/yyyy")+"')";
-    query.exec(q);    
+    db->setTable("tasksTable");
+    QString query = "INSERT INTO tasksTable (title, start, end, detail, taskDate) VALUES ('"+lastTitle+"','"+taskStart->time().toString("HH:mm")+"','"+taskEnd->time().toString("HH:mm")+"','"+taskText->toPlainText()+"','"+today.toString("dd/MM/yyyy")+"')";
+    db->insert(query);
     setProjectsList();    
     prefs.updateList();
 }
 
 void TaskManager::startTimer()
-{
-    prefs.db.open();    
-    QSqlQuery query;
-    query.exec("SELECT timer FROM prefTable");
-    int field = query.record().indexOf("timer");
-    query.next();
-    int time = query.value(field).toInt();
+{ 
+    db->setTable("prefTable");
+    int time = db->select("timer").toInt();
     timer->start(time*60000);
 }
 
@@ -163,27 +161,6 @@ void TaskManager::showPreferences()
     prefs.show();
 }
 
-bool TaskManager::tableExists(QString tablename)
-{
-    QStringList tables = prefs.db.tables(QSql::Tables);
-    return tables.indexOf(tablename) >= 0;
-}
-
-void TaskManager::createTable(QString tablename)
-{
-    prefs.db.open();    
-    QSqlQuery query;
-    if (tablename == "tasksTable")
-    {
-        query.exec("CREATE TABLE tasksTable (id integer PRIMARY KEY, title string, start string, end string, detail text, taskDate date)");
-    }
-    else
-    {
-        query.exec("CREATE TABLE prefTable (id integer, timer integer,  history integer)");
-        query.exec("INSERT INTO prefTable VALUES (1,60,30)");
-    }    
-}
-
 void TaskManager::about()
 {
     QString cp = "©";
@@ -194,43 +171,48 @@ void TaskManager::about()
 
 void TaskManager::showTasks()
 {
-    QFile file0("data/.header");    
+    QFile file0(path+"data/.header");    
     file0.open(QIODevice::ReadOnly|QIODevice::Text);
     QString data0 = QString::fromUtf8(file0.readAll());    
-    QFile file1("data/.footer");    
+    QFile file1(path+"data/.footer");    
     file1.open(QIODevice::ReadOnly|QIODevice::Text);
     QString data1 = QString::fromUtf8(file1.readAll());        
-    prefs.db.open();    
-    QSqlQuery query;
-    query.exec("SELECT * FROM tasksTable");
-    QFile file("data/tasks.html");    
+    db->setTable("tasksTable");
+    QStringList ids = db->selectAll("id");
+    QStringList titles = db->selectAll("title");
+    QStringList starts = db->selectAll("start");
+    QStringList ends = db->selectAll("end");
+    QStringList details = db->selectAll("detail");
+    QStringList dates = db->selectAll("taskDate");   
+    QFile file(path+"data/tasks.html");    
     if (file.open(QIODevice::WriteOnly|QIODevice::Text)) {
         file.write(data0.toUtf8()); 
-        while (query.next()) {
+        for (int i = 0; i < ids.size(); i++)
+        {
              file.write("<tr>\n");  
              file.write("<td>");   
-             file.write(query.value(0).toString().toUtf8());
+             file.write(ids.at(i).toUtf8());
              file.write("</td>\n");   
              file.write("<td>"); 
-             file.write(query.value(1).toString().toUtf8());
+             file.write(titles.at(i).toUtf8());
              file.write("</td>\n");  
              file.write("<td>");  
-             file.write(query.value(2).toString().toUtf8());
+             file.write(starts.at(i).toUtf8());
              file.write("</td>\n");   
              file.write("<td>"); 
-             file.write(query.value(3).toString().toUtf8());
+             file.write(ends.at(i).toUtf8());
              file.write("</td>\n");  
              file.write("<td>");  
-             file.write(query.value(4).toString().toUtf8());
+             file.write(details.at(i).toUtf8());
              file.write("</td>\n");   
              file.write("<td>"); 
-             file.write(query.value(5).toString().toUtf8());
+             file.write(dates.at(i).toUtf8());
              file.write("</td>\n");       
              file.write("</tr>\n");  
         }      
         file.write(data1.toUtf8());    
      }
     QDir dir;
-    QDesktopServices::openUrl(QUrl("file:///"+dir.currentPath()+"/data/tasks.html"));    
+    QDesktopServices::openUrl(QUrl("file:///"+path+"data/tasks.html"));    
 }
 //

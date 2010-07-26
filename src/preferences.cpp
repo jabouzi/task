@@ -3,67 +3,70 @@
 Preferences::Preferences( QWidget * parent, Qt::WFlags f) 
     : QDialog(parent, f)
 {
-    setupUi(this);
-    db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("data/.task.db");
-    setRepeatTime();
-    setHistoryDays();    
-    setProjectsList();
+    setupUi(this);   
     connect(this->saveButton, SIGNAL(clicked()), this, SLOT(save()));    
     connect(removeButton, SIGNAL(clicked()), this, SLOT(deleteProject()));
 }
 
-void Preferences::setRepeatTime()
+void Preferences::initPath(QString lpath)
 {
-    db.open();    
-    QSqlQuery query;
-    query.exec("SELECT timer FROM prefTable WHERE id = 1");
-    int field = query.record().indexOf("timer");
-    query.next();
-    minutesBox->setValue(query.value(field).toInt());
+    path = lpath;
+    initDB();
+    setRepeatTime();
+    setHistoryDays();    
+    setProjectsList();
+}
+
+void Preferences::initDB()
+{
+    db = Database::getInstance();
+    db->setDatabaseName(path+"data/.task.db");
+    db->setDatabase();   
+}
+
+void Preferences::setRepeatTime()
+{  
+    db->setTable("prefTable");
+    db->where("id = 1");
+    int timer = db->select("timer").toInt();     
+    minutesBox->setValue(timer);
+    db->where("");
 }
 
 void Preferences::setHistoryDays()
 {
-    db.open();    
-    QSqlQuery query;
-    query.exec("SELECT history FROM prefTable WHERE id = 1");
-    int field = query.record().indexOf("history");
-    query.next();
-    daysBox->setValue(query.value(field).toInt());
+    db->setTable("prefTable");
+    db->where("id = 1");
+    int htime = db->select("history").toInt();       
+    daysBox->setValue(htime);
+    db->where("");
 }
 
 void Preferences::setProjectsList()
 {
     projectsList->clear();
-    QStringList titlesList;
-    db.open();    
-    QSqlQuery query;
-    query.exec("SELECT DISTINCT title FROM tasksTable");
-    int field = query.record().indexOf("title");
-    while (query.next()) {
-        titlesList << query.value(field).toString();
-    }
-    titlesList.sort();
+    QStringList titlesList;    
+    db->setTable("tasksTable");
+    titlesList = db->selectAllDistinct("title");
+    titlesList.sort();  
     projectsList->addItems(titlesList);
 }
 
 void Preferences::deleteProject()
 {
-    db.open();    
-    QSqlQuery query;
     QString sql = "DELETE FROM tasksTable WHERE title = '"+projectsList->currentText()+"'";
-    query.exec(sql);
+    db->sqlQuery(sql);
     setProjectsList();
     emit(preferencesChanged());
 }
 
 void Preferences::save()
 {
-    db.open();    
-    QSqlQuery query;
-    query.exec("UPDATE prefTable set timer = "+QString::number(minutesBox->value())+" WHERE id = 1");
-    query.exec("UPDATE prefTable set history = "+QString::number(daysBox->value())+" WHERE id = 1");
+    db->setTable("prefTable");
+    db->where("id = 1");
+    db->update("timer", QString::number(minutesBox->value()));
+    db->update("history", QString::number(daysBox->value()));
+    db->where("");
     emit(preferencesChanged());
 }
 

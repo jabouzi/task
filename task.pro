@@ -1,0 +1,9 @@
+TEMPLATE = app
+QT = gui core sql
+CONFIG += qt warn_on release
+OBJECTS_DIR = build
+MOC_DIR = build
+UI_DIR = build
+FORMS = ui/taskManager.ui ui/preferences.ui
+HEADERS = src/taskManager.h src/preferences.h src/database.h src/log.h
+SOURCES = src/taskManager.cpp src/main.cpp src/preferences.cpp src/database.cpp src/log.cpp

@@ -65,6 +65,27 @@
     <attribute name="verticalHeaderMinimumSectionSize">
      <number>210</number>
     </attribute>
+    <attribute name="verticalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="verticalHeaderDefaultSectionSize">
+     <number>210</number>
+    </attribute>
+    <attribute name="horizontalHeaderMinimumSectionSize">
+     <number>300</number>
+    </attribute>
+    <attribute name="verticalHeaderMinimumSectionSize">
+     <number>210</number>
+    </attribute>
+    <attribute name="horizontalHeaderHighlightSections">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="verticalHeaderHighlightSections">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>281</number>
+    </attribute>
     <row/>
     <column/>
    </widget>
@@ -122,6 +143,12 @@
       <height>23</height>
      </rect>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="displayFormat">
+     <string>hh:mm</string>
+    </property>
    </widget>
    <widget class="QTimeEdit" name="taskStart">
     <property name="geometry">
@@ -131,6 +158,12 @@
       <width>91</width>
       <height>23</height>
      </rect>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="displayFormat">
+     <string>hh:mm</string>
     </property>
    </widget>
    <widget class="QLabel" name="labelTask">
@@ -179,7 +212,7 @@
      <x>0</x>
      <y>0</y>
      <width>305</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

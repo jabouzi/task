@@ -4,19 +4,23 @@
 #include <QDialog>
 #include <QtSql>
 #include "ui_preferences.h"
+#include "database.h"
 
 class Preferences : public QDialog, public Ui::Preferences
 {
 Q_OBJECT
 public:
     Preferences( QWidget * parent = 0, Qt::WFlags f = 0 );
-    void updateList();
-    QSqlDatabase db;
+    void initPath(QString);
+    void updateList();    
     
 private:
+    void initDB();
     void setRepeatTime();
     void setHistoryDays();
-    void setProjectsList();    
+    void setProjectsList();   
+    QString path; 
+    Database *db;
     
 private slots:
     void deleteProject();
