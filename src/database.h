@@ -27,6 +27,7 @@ class Database : public QObject
         void sqlQuery(QString);
         bool tableExists(QString);
         void createTable(QString);
+        void setPath(QString);
     
     private:    
         static bool instanceFlag;
@@ -41,6 +42,7 @@ class Database : public QObject
         bool tablesExists();
         void createTables();
         Log *pLog;
+        QString path;
 };
 
 #endif

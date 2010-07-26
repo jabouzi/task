@@ -27,7 +27,7 @@ void Preferences::initDB()
 void Preferences::setRepeatTime()
 {  
     db->setTable("prefTable");
-    db->where("id = 1");
+    db->where("id = '1'");
     int timer = db->select("timer").toInt();     
     minutesBox->setValue(timer);
     db->where("");
@@ -36,7 +36,7 @@ void Preferences::setRepeatTime()
 void Preferences::setHistoryDays()
 {
     db->setTable("prefTable");
-    db->where("id = 1");
+    db->where("id = '1'");
     int htime = db->select("history").toInt();       
     daysBox->setValue(htime);
     db->where("");
@@ -63,7 +63,7 @@ void Preferences::deleteProject()
 void Preferences::save()
 {
     db->setTable("prefTable");
-    db->where("id = 1");
+    db->where("id = '1'");
     db->update("timer", QString::number(minutesBox->value()));
     db->update("history", QString::number(daysBox->value()));
     db->where("");

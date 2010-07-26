@@ -114,7 +114,7 @@ void Database::update(QString field, QString value)
 {
     prepareDB();
     QSqlQuery query;    
-    QString sql = "UPDATE "+table+" SET "+field+" = '"+value;
+    QString sql = "UPDATE "+table+" SET "+field+" = '"+value+"'";
     if (sqlWhere != "") sql += " WHERE "+sqlWhere;
     pLog->Write(sql);
     query.exec(sql);
@@ -170,3 +170,10 @@ void Database::createTables()
     query.exec("CREATE TABLE prefTable (id integer, timer integer,  history integer)");
     query.exec("INSERT INTO prefTable VALUES (1,60,30)");
 }
+
+void Database::setPath(QString lpath)
+{
+    path = lpath;
+    pLog = new Log(path+"errors.log");
+}
+
