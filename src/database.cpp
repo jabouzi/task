@@ -105,7 +105,7 @@ QString Database::select(QString select)
 void Database::insert(QString sql)
 {
     prepareDB();
-    pLog->Write(sql.replace(QString("'"), QString("''")));
+    pLog->Write(sql);
     QSqlQuery query;
     query.exec(sql);
 }
@@ -114,7 +114,7 @@ void Database::update(QString field, QString value)
 {
     prepareDB();
     QSqlQuery query;    
-    QString sql = "UPDATE "+table+" SET "+field+" = '"+value.replace(QString("'"), QString("''"))+"'";
+    QString sql = "UPDATE "+table+" SET "+field+" = '"+value+"'";
     if (sqlWhere != "") sql += " WHERE "+sqlWhere;
     pLog->Write(sql);
     query.exec(sql);

@@ -136,7 +136,7 @@ void TaskManager::save()
     lastTitle = taskList->currentText();
     QDate today = QDate::currentDate();
     db->setTable("tasksTable");
-    QString query = "INSERT INTO tasksTable (title, start, end, detail, taskDate) VALUES ('"+lastTitle+"','"+taskStart->time().toString("HH:mm")+"','"+taskEnd->time().toString("HH:mm")+"','"+taskText->toPlainText()+"','"+today.toString("dd/MM/yyyy")+"')";
+    QString query = "INSERT INTO tasksTable (title, start, end, detail, taskDate) VALUES ('"+lastTitle+"','"+taskStart->time().toString("HH:mm")+"','"+taskEnd->time().toString("HH:mm")+"','"+taskText->toPlainText().replace(QString("'"), QString("''"))+"','"+today.toString("dd/MM/yyyy")+"')";
     db->insert(query);
     setProjectsList();    
     prefs.updateList();
