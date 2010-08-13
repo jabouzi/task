@@ -308,6 +308,14 @@
    </property>
   </action>
  </widget>
+ <tabstops>
+  <tabstop>taskList</tabstop>
+  <tabstop>taskStart</tabstop>
+  <tabstop>taskEnd</tabstop>
+  <tabstop>taskTable</tabstop>
+  <tabstop>taskText</tabstop>
+  <tabstop>saveButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
